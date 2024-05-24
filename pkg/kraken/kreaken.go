@@ -53,7 +53,7 @@ func GetLastTradedPrice(pair string) (string, error) {
 
 	item, ok := result.Result[pair]
 	if !ok {
-		return "", fmt.Errorf("response does not contain target currency pair: %v", pair)
+		return "", fmt.Errorf("response does not contain target currency pair %v: %v", pair, result)
 	}
 
 	price := item.C[0]
