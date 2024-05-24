@@ -3,6 +3,7 @@ package service
 import "fmt"
 
 type tradeClient struct {
+	// TODO: reuse http client
 	fetcherFunc func(string) (string, error)
 }
 
