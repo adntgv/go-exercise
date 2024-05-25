@@ -1,6 +1,10 @@
 package kraken
 
-import "testing"
+import (
+	"fmt"
+	"strconv"
+	"testing"
+)
 
 func TestGetLastTradedPrice(t *testing.T) {
 	type args struct {
@@ -9,7 +13,6 @@ func TestGetLastTradedPrice(t *testing.T) {
 	tests := []struct {
 		name    string
 		args    args
-		want    string
 		wantErr bool
 	}{
 		{
@@ -17,7 +20,6 @@ func TestGetLastTradedPrice(t *testing.T) {
 			args: args{
 				pair: "BTC/CHF",
 			},
-			want:    "63011.50000",
 			wantErr: false,
 		},
 	}
@@ -28,8 +30,16 @@ func TestGetLastTradedPrice(t *testing.T) {
 				t.Errorf("GetLastTradedPrice() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if got != tt.want {
-				t.Errorf("GetLastTradedPrice() = %v, want %v", got, tt.want)
+
+			value, err := strconv.ParseFloat(got, 64)
+			if err != nil {
+				t.Errorf("GetLastTradedPrice() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+
+			if value == 0 {
+				t.Errorf("GetLastTradedPrice() error = %v, wantErr %v", fmt.Errorf("value is equal to 0"), tt.wantErr)
+				return
 			}
 		})
 	}
