@@ -3,10 +3,12 @@ package service
 import (
 	"encoding/json"
 	"net/http"
+
+	"github.com/adntgv/go-exercise/internal/models"
 )
 
 type response struct {
-	Ltps []LastTradedPrice
+	Ltps []models.LastTradedPrice
 }
 
 func (app *App) Handle(w http.ResponseWriter, r *http.Request) {

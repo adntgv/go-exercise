@@ -1,20 +1,25 @@
 package service
 
+import (
+	"github.com/adntgv/go-exercise/internal/models"
+	tradefetcher "github.com/adntgv/go-exercise/internal/tradeFetcher"
+)
+
 type App struct {
-	tradeFetcher *TradeFetcher
+	tradeFetcher *tradefetcher.TradeFetcher
 }
 
 func NewApp(pairs []string, fetchingPeriodInSeconds int) *App {
 	return &App{
-		tradeFetcher: newTradeFetcher(stringsToCurrencyPairs(pairs), fetchingPeriodInSeconds),
+		tradeFetcher: tradefetcher.New(stringsToCurrencyPairs(pairs), fetchingPeriodInSeconds),
 	}
 }
 
-func stringsToCurrencyPairs(pairs []string) []currencyPair {
-	cps := make([]currencyPair, len(pairs))
+func stringsToCurrencyPairs(pairs []string) []models.CurrencyPair {
+	cps := make([]models.CurrencyPair, len(pairs))
 
 	for i, pair := range pairs {
-		cps[i] = currencyPair(pair)
+		cps[i] = models.CurrencyPair(pair)
 	}
 
 	return cps
@@ -24,6 +29,6 @@ func (s *App) Run() {
 	s.tradeFetcher.Run()
 }
 
-func (s *App) GetLastTradedPrices() []LastTradedPrice {
+func (s *App) GetLastTradedPrices() []models.LastTradedPrice {
 	return s.tradeFetcher.GetLastTradedPrice()
 }

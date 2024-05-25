@@ -1,4 +1,4 @@
-package service
+package tradefetcher
 
 import (
 	"fmt"
@@ -6,17 +6,18 @@ import (
 	"sync"
 	"time"
 
+	"github.com/adntgv/go-exercise/internal/models"
 	"github.com/adntgv/go-exercise/pkg/kraken"
 )
 
 type TradeFetcher struct {
 	client         *tradeClient
-	pairs          []currencyPair
+	pairs          []models.CurrencyPair
 	ltpsMap        *sync.Map
 	fetchingPeriod time.Duration
 }
 
-func newTradeFetcher(pairs []currencyPair, fetchingPeriosInSeconds int) *TradeFetcher {
+func New(pairs []models.CurrencyPair, fetchingPeriosInSeconds int) *TradeFetcher {
 	return &TradeFetcher{
 		pairs: pairs,
 		client: &tradeClient{
@@ -31,8 +32,8 @@ func toFetchingPeriod(seconds int) time.Duration {
 	return time.Second * time.Duration(seconds)
 }
 
-func (s *TradeFetcher) GetLastTradedPrice() []LastTradedPrice {
-	ltps := make([]LastTradedPrice, len(s.pairs))
+func (s *TradeFetcher) GetLastTradedPrice() []models.LastTradedPrice {
+	ltps := make([]models.LastTradedPrice, len(s.pairs))
 
 	for i, pair := range s.pairs {
 		value, ok := s.ltpsMap.Load(pair)
@@ -41,9 +42,9 @@ func (s *TradeFetcher) GetLastTradedPrice() []LastTradedPrice {
 			continue
 		}
 
-		ltp := LastTradedPrice{
+		ltp := models.LastTradedPrice{
 			Pair:   pair,
-			Amount: value.(amount),
+			Amount: value.(models.Amount),
 		}
 
 		ltps[i] = ltp
@@ -54,7 +55,7 @@ func (s *TradeFetcher) GetLastTradedPrice() []LastTradedPrice {
 
 func (s *TradeFetcher) Run() {
 	for _, pair := range s.pairs {
-		go func(pair currencyPair) {
+		go func(pair models.CurrencyPair) {
 			for {
 				tradedAmount, err := s.fetchLatestTradedAmount(pair)
 				if err != nil {
@@ -70,7 +71,7 @@ func (s *TradeFetcher) Run() {
 	}
 }
 
-func (s *TradeFetcher) fetchLatestTradedAmount(pair currencyPair) (amount, error) {
+func (s *TradeFetcher) fetchLatestTradedAmount(pair models.CurrencyPair) (models.Amount, error) {
 	lta, err := s.client.fetchLatestTradedAmount(pair)
 	if err != nil {
 		return "", fmt.Errorf("could not fetch latest traded amount: %v", err)

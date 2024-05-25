@@ -3,6 +3,8 @@ package service
 import (
 	"reflect"
 	"testing"
+
+	"github.com/adntgv/go-exercise/internal/models"
 )
 
 func Test_stringsToCurrencyPairs(t *testing.T) {
@@ -12,13 +14,13 @@ func Test_stringsToCurrencyPairs(t *testing.T) {
 	tests := []struct {
 		name string
 		args args
-		want []currencyPair
+		want []models.CurrencyPair
 	}{
 		{
 			args: args{
 				pairs: []string{"BTC/USD", "BTC/CHF", "BTC/EUR"},
 			},
-			want: []currencyPair{"BTC/USD", "BTC/CHF", "BTC/EUR"},
+			want: []models.CurrencyPair{"BTC/USD", "BTC/CHF", "BTC/EUR"},
 		},
 	}
 	for _, tt := range tests {
