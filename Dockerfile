@@ -7,10 +7,11 @@ COPY . .
 
 RUN go mod download
 
-RUN go build -o service cmd/server/main.go
+RUN go build -o service ./cmd/server
 
 # Deplyment stage
 FROM alpine:latest
+RUN apk --update add ca-certificates
 
 WORKDIR /
 

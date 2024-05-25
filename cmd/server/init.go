@@ -2,12 +2,20 @@ package main
 
 import (
 	"os"
+	"strconv"
 	"strings"
+)
+
+var (
+	port                    = "80"
+	currencies              = []string{"BTC/USD", "BTC/CHF", "BTC/EUR"}
+	fetchingPeriodInSeconds = 30
 )
 
 func init() {
 	port = getEnv("PORT", port)
 	currencies = getCurrenciesFromEnv(currencies)
+	fetchingPeriodInSeconds = getFetchingPeriod(fetchingPeriodInSeconds)
 }
 
 func getCurrenciesFromEnv(defaultValue []string) []string {
@@ -21,6 +29,18 @@ func getCurrenciesFromEnv(defaultValue []string) []string {
 		}
 
 		return pairs
+	}
+}
+
+func getFetchingPeriod(defaultValue int) int {
+	if value, ok := os.LookupEnv("FETCHING_PERIOD_IN_SECONDS"); !ok {
+		return defaultValue
+	} else {
+		result, err := strconv.Atoi(value)
+		if err != nil {
+			panic(err)
+		}
+		return result
 	}
 }
 

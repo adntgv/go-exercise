@@ -10,19 +10,25 @@ import (
 )
 
 type TradeFetcher struct {
-	client *tradeClient
-	pairs  []currencyPair
-
-	ltpsMap sync.Map
+	client         *tradeClient
+	pairs          []currencyPair
+	ltpsMap        *sync.Map
+	fetchingPeriod time.Duration
 }
 
-func newTradeFetcher(pairs []currencyPair) *TradeFetcher {
+func newTradeFetcher(pairs []currencyPair, fetchingPeriosInSeconds int) *TradeFetcher {
 	return &TradeFetcher{
 		pairs: pairs,
 		client: &tradeClient{
 			fetcherFunc: kraken.GetLastTradedPrice,
 		},
+		ltpsMap:        &sync.Map{},
+		fetchingPeriod: toFetchingPeriod(fetchingPeriosInSeconds),
 	}
+}
+
+func toFetchingPeriod(seconds int) time.Duration {
+	return time.Second * time.Duration(seconds)
 }
 
 func (s *TradeFetcher) GetLastTradedPrice() []LastTradedPrice {
@@ -50,8 +56,6 @@ func (s *TradeFetcher) Run() {
 	for _, pair := range s.pairs {
 		go func(pair currencyPair) {
 			for {
-				<-time.After(time.Microsecond * 500)
-
 				tradedAmount, err := s.fetchLatestTradedAmount(pair)
 				if err != nil {
 					log.Printf("could not fetch traded amount of '%v': %v", pair, err)
@@ -59,6 +63,8 @@ func (s *TradeFetcher) Run() {
 				}
 
 				s.ltpsMap.Store(pair, tradedAmount)
+
+				<-time.After(s.fetchingPeriod)
 			}
 		}(pair)
 	}

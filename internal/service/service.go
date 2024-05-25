@@ -1,16 +1,12 @@
 package service
 
-import (
-	"sync"
-)
-
 type App struct {
 	tradeFetcher *TradeFetcher
 }
 
-func NewApp(pairs []string) *App {
+func NewApp(pairs []string, fetchingPeriodInSeconds int) *App {
 	return &App{
-		tradeFetcher: newTradeFetcher(stringsToCurrencyPairs(pairs)),
+		tradeFetcher: newTradeFetcher(stringsToCurrencyPairs(pairs), fetchingPeriodInSeconds),
 	}
 }
 
@@ -25,15 +21,7 @@ func stringsToCurrencyPairs(pairs []string) []currencyPair {
 }
 
 func (s *App) Run() {
-	wg := &sync.WaitGroup{}
-
-	wg.Add(1)
-	go func() {
-		s.tradeFetcher.Run()
-		wg.Done()
-	}()
-
-	wg.Wait()
+	s.tradeFetcher.Run()
 }
 
 func (s *App) GetLastTradedPrices() []LastTradedPrice {

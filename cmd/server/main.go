@@ -2,19 +2,14 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/adntgv/go-exercise/internal/service"
-	"github.com/labstack/echo/v4"
-)
-
-var (
-	port       = "80"
-	currencies = []string{"BTC/USD", "BTC/CHF", "BTC/EUR"}
 )
 
 func main() {
-	app := service.NewApp(currencies)
+	app := service.NewApp(currencies, fetchingPeriodInSeconds)
 
 	go func() {
 		app.Run()
@@ -24,24 +19,10 @@ func main() {
 }
 
 func serve(port string, app *service.App) {
-	e := echo.New()
-
-	registerRoutes(e, app)
+	http.HandleFunc("/api/v1/ltp", app.Handle)
 
 	serveAddress := fmt.Sprintf(":%v", port)
-	e.Logger.Fatal(e.Start(serveAddress))
-}
-
-func registerRoutes(e *echo.Echo, app *service.App) {
-	e.GET("/api/v1/ltp", func(c echo.Context) error {
-		type response struct {
-			Ltps []service.LastTradedPrice `json:"ltps"`
-		}
-
-		ltps := app.GetLastTradedPrices()
-
-		return c.JSON(http.StatusOK, response{
-			Ltps: ltps,
-		})
-	})
+	if err := http.ListenAndServe(serveAddress, nil); err != nil {
+		log.Fatalln(err)
+	}
 }
