@@ -12,15 +12,9 @@ import (
 )
 
 func TestGetLTPHandler(t *testing.T) {
-	req, err := http.NewRequest("GET", "/api/v1/ltp", nil)
-	if err != nil {
-		t.Fatal(err)
-	}
-
 	currencies := []string{"BTC/USD"}
 	fetchingPeriod := 1
 
-	rr := httptest.NewRecorder()
 	app := service.NewApp(currencies, fetchingPeriod)
 
 	go func() {
@@ -31,6 +25,11 @@ func TestGetLTPHandler(t *testing.T) {
 
 	handler := http.HandlerFunc(app.Handle)
 
+	rr := httptest.NewRecorder()
+	req, err := http.NewRequest("GET", "/api/v1/ltp", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
 	handler.ServeHTTP(rr, req)
 
 	if status := rr.Code; status != http.StatusOK {
