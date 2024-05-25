@@ -21,6 +21,7 @@ func TestGetLTPHandler(t *testing.T) {
 		app.Run()
 	}()
 
+	// Give time for application to fetch the latest sale prices
 	<-time.After(time.Second)
 
 	handler := http.HandlerFunc(app.Handle)
