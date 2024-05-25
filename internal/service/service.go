@@ -17,8 +17,8 @@ func NewApp(pairs []string) *App {
 func stringsToCurrencyPairs(pairs []string) []currencyPair {
 	cps := make([]currencyPair, len(pairs))
 
-	for _, pair := range pairs {
-		cps = append(cps, currencyPair(pair))
+	for i, pair := range pairs {
+		cps[i] = currencyPair(pair)
 	}
 
 	return cps

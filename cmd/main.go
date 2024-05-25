@@ -13,7 +13,7 @@ type response struct {
 }
 
 func main() {
-	app := service.NewApp([]string{""})
+	app := service.NewApp([]string{"BTC/USD", "BTC/CHF", "BTC/EUR"})
 
 	go func() {
 		app.Run()
