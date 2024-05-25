@@ -44,3 +44,15 @@ You shall provide time accuracy of the data up to the last minute.
 The public Kraken API might be used to retrieve the above LTP information
 [API Documentation](https://docs.kraken.com/rest/#tag/Spot-Market-Data/operation/getTickerInformation)
 (The values of the last traded price is called “last trade closed”)
+
+# Building and running
+```
+	docker build -t service .
+	docker run -p 80:80 service 
+```
+
+# Testing
+```
+	go test ./...
+```
+
