@@ -8,25 +8,40 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-type response struct {
-	Ltps []service.LastTradedPrice
-}
+var (
+	port       = "80"
+	currencies = []string{"BTC/USD", "BTC/CHF", "BTC/EUR"}
+)
 
 func main() {
-	app := service.NewApp([]string{"BTC/USD", "BTC/CHF", "BTC/EUR"})
+	app := service.NewApp(currencies)
 
 	go func() {
 		app.Run()
 	}()
 
-	e := echo.New()
-	e.GET("/api/v1/ltp", func(c echo.Context) error {
-		return c.JSON(http.StatusOK, response{
-			Ltps: app.GetLastTradedPrices(),
-		})
-	})
+	serve(port, app)
+}
 
-	port := "80"
+func serve(port string, app *service.App) {
+	e := echo.New()
+
+	registerRoutes(e, app)
+
 	serveAddress := fmt.Sprintf(":%v", port)
 	e.Logger.Fatal(e.Start(serveAddress))
+}
+
+func registerRoutes(e *echo.Echo, app *service.App) {
+	type response struct {
+		Ltps []service.LastTradedPrice `json:"ltps"`
+	}
+
+	ltps := app.GetLastTradedPrices()
+
+	e.GET("/api/v1/ltp", func(c echo.Context) error {
+		return c.JSON(http.StatusOK, response{
+			Ltps: ltps,
+		})
+	})
 }

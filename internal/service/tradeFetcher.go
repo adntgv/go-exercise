@@ -28,7 +28,7 @@ func newTradeFetcher(pairs []currencyPair) *TradeFetcher {
 func (s *TradeFetcher) GetLastTradedPrice() []LastTradedPrice {
 	ltps := make([]LastTradedPrice, len(s.pairs))
 
-	for _, pair := range s.pairs {
+	for i, pair := range s.pairs {
 		value, ok := s.ltpsMap.Load(pair)
 		if !ok {
 			log.Println("could not get traded amount of ", pair)
@@ -40,7 +40,7 @@ func (s *TradeFetcher) GetLastTradedPrice() []LastTradedPrice {
 			Amount: value.(amount),
 		}
 
-		ltps = append(ltps, ltp)
+		ltps[i] = ltp
 	}
 
 	return ltps
