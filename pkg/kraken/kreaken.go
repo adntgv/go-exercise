@@ -27,6 +27,7 @@ type TickerInfo struct {
 	O string    `json:"o"`
 }
 
+// TODO: reuse http client
 func GetLastTradedPrice(pair string) (string, error) {
 	url := fmt.Sprintf("%v%v", host, pair)
 	resp, err := http.Get(url)

@@ -33,13 +33,13 @@ func serve(port string, app *service.App) {
 }
 
 func registerRoutes(e *echo.Echo, app *service.App) {
-	type response struct {
-		Ltps []service.LastTradedPrice `json:"ltps"`
-	}
-
-	ltps := app.GetLastTradedPrices()
-
 	e.GET("/api/v1/ltp", func(c echo.Context) error {
+		type response struct {
+			Ltps []service.LastTradedPrice `json:"ltps"`
+		}
+
+		ltps := app.GetLastTradedPrices()
+
 		return c.JSON(http.StatusOK, response{
 			Ltps: ltps,
 		})

@@ -7,7 +7,7 @@ COPY . .
 
 RUN go mod download
 
-RUN go build -o service cmd/main.go
+RUN go build -o service cmd/server/main.go
 
 # Deplyment stage
 FROM alpine:latest
